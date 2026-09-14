@@ -141,9 +141,66 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* Prototype HTML container — constrain fonts and prevent overflow */
+.prototype-html {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.prototype-html h1 { font-size: 2em !important; line-height: 1.2 !important; }
+.prototype-html h2 { font-size: 1.5em !important; line-height: 1.3 !important; }
+.prototype-html h3 { font-size: 1.17em !important; line-height: 1.4 !important; }
+.prototype-html p,
+.prototype-html li,
+.prototype-html span,
+.prototype-html td,
+.prototype-html th { font-size: inherit !important; line-height: inherit !important; }
+
 /* Mermaid diagram styling */
 .mermaid {
   background: transparent !important;
+}
+
+.mermaid-diagram {
+  min-height: 60px;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mermaid dark theme overrides */
+.mermaid-diagram .node rect,
+.mermaid-diagram .node polygon,
+.mermaid-diagram .node circle {
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+}
+
+.mermaid-diagram .edgePath path {
+  stroke-width: 1.5px !important;
+}
+
+.mermaid-diagram .cluster rect {
+  rx: 12;
+  ry: 12;
+}
+
+/* Journey diagram specific */
+.mermaid-diagram .journey-section {
+  rx: 8;
+}
+
+/* Message content styling */
+.message-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Code block styling */
