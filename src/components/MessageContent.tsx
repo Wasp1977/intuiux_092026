@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import mermaid from 'mermaid';
 import ReactMarkdown from 'react-markdown';
 import { Search } from 'lucide-react';
@@ -98,6 +98,48 @@ function MermaidDiagram({ chart, stageId }: MermaidDiagramProps) {
   );
 }
 
+// Auto-resizing iframe for isolated prototype rendering
+function PrototypeIframe({ htmlContent }: { htmlContent: string }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [height, setHeight] = useState(600);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const handleLoad = () => {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (doc?.body) {
+          // Wait a tick for layout to settle
+          setTimeout(() => {
+            const h = doc.body.scrollHeight || doc.documentElement.scrollHeight || 600;
+            setHeight(Math.min(Math.max(h, 300), 2000));
+          }, 100);
+        }
+      } catch {
+        // Cross-origin — keep default height
+      }
+    };
+
+    iframe.addEventListener('load', handleLoad);
+    return () => iframe.removeEventListener('load', handleLoad);
+  }, [htmlContent]);
+
+  return (
+    <div className="prototype-iframe-container rounded-xl overflow-hidden border border-white/10">
+      <iframe
+        ref={iframeRef}
+        srcDoc={htmlContent}
+        className="prototype-iframe w-full border-0"
+        style={{ height: `${height}px` }}
+        sandbox="allow-scripts allow-same-origin"
+        title="Прототип"
+      />
+    </div>
+  );
+}
+
 interface MessageContentProps {
   content: string;
   stageId?: string;
@@ -162,12 +204,9 @@ export function MessageContent({ content, stageId, zoomLevel = 100 }: MessageCon
           </div>
         </div>
       )}
-      {/* HTML контент (прототип) рендерим напрямую */}
+      {/* HTML контент (прототип) рендерим в изолированном iframe */}
       {isHtmlContent ? (
-        <div 
-          className="prototype-html rounded-xl overflow-hidden"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+        <PrototypeIframe htmlContent={content} />
       ) : (
         /* Markdown + Mermaid контент */
         parts.map((part) => (
